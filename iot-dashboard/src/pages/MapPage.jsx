@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
 import { 
   Box, Card, Typography, Switch, FormControlLabel, Paper, 
-  ToggleButtonGroup, ToggleButton, IconButton 
+  ToggleButtonGroup, ToggleButton, IconButton, useTheme, useMediaQuery 
 } from '@mui/material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import 'leaflet/dist/leaflet.css';
@@ -26,6 +26,9 @@ export default function MapPage() {
     latestData, history, simActive, simType, updateSimulation,
     showPath, setShowPath, localPath 
   } = useWebSocket();
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const currentLat = latestData?.lat || 29.8649; 
   const currentLon = latestData?.lon || 77.8966;
@@ -85,16 +88,16 @@ export default function MapPage() {
         }}
       >
         {/* TOP RIGHT: Dummy Data Controls */}
-        <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 1000 }}>
+        <Box sx={{ position: 'absolute', top: { xs: 10, sm: 20 }, right: { xs: 10, sm: 20 }, zIndex: 1000 }}>
           <Paper 
             elevation={0} 
             sx={{ 
-              px: 2, 
-              py: 1, 
+              px: { xs: 1.5, sm: 2 }, 
+              py: { xs: 0.5, sm: 1 }, 
               display: 'flex', 
               flexDirection: 'column',
               alignItems: 'flex-end', 
-              gap: 1.5, 
+              gap: { xs: 0.5, sm: 1.5 }, 
               borderRadius: 3,
               border: '1px solid #dadce0',
               bgcolor: '#ffffff',
@@ -113,7 +116,7 @@ export default function MapPage() {
                   }}
                 />
               }
-              label={<Typography variant="body2" sx={{ fontWeight: 600, color: simActive ? '#1a73e8' : '#5f6368' }}>Dummy GPS Data</Typography>}
+              label={<Typography variant="body2" sx={{ fontWeight: 600, color: simActive ? '#1a73e8' : '#5f6368', fontSize: isMobile ? '0.75rem' : '0.875rem' }}>Dummy GPS</Typography>}
               sx={{ m: 0 }}
             />
             {simActive && (
@@ -128,9 +131,9 @@ export default function MapPage() {
                     textTransform: 'none',
                     fontWeight: 600,
                     color: '#5f6368',
-                    px: 1.5,
-                    py: 0.25,
-                    fontSize: '0.8rem',
+                    px: { xs: 1, sm: 1.5 },
+                    py: { xs: 0.1, sm: 0.25 },
+                    fontSize: { xs: '0.7rem', sm: '0.8rem' },
                     '&.Mui-selected': {
                       bgcolor: '#e8f0fe',
                       color: '#1a73e8',
@@ -147,12 +150,12 @@ export default function MapPage() {
         </Box>
 
         {/* BOTTOM LEFT: Speed & Path Controls */}
-        <Box sx={{ position: 'absolute', bottom: 30, left: 20, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ position: 'absolute', bottom: { xs: 16, sm: 30 }, left: { xs: 10, sm: 20 }, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 2 } }}>
           <Paper 
             elevation={0} 
             sx={{ 
-              width: 72, 
-              height: 72, 
+              width: { xs: 56, sm: 72 }, 
+              height: { xs: 56, sm: 72 }, 
               borderRadius: '50%', 
               display: 'flex', 
               flexDirection: 'column', 
@@ -164,14 +167,14 @@ export default function MapPage() {
               boxShadow: '0 2px 6px rgba(60,64,67,0.3)'
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#202124', lineHeight: 1 }}>{parseInt(currentSpeed)}</Typography>
-            <Typography variant="caption" sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#5f6368' }}>km/h</Typography>
+            <Typography variant={isMobile ? "h6" : "h5"} sx={{ fontWeight: 700, color: '#202124', lineHeight: 1 }}>{parseInt(currentSpeed)}</Typography>
+            <Typography variant="caption" sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, fontWeight: 600, color: '#5f6368' }}>km/h</Typography>
           </Paper>
           
           <Paper 
             elevation={0} 
             sx={{ 
-              px: 2, 
+              px: { xs: 1.5, sm: 2 }, 
               py: 0.5, 
               borderRadius: '24px', 
               bgcolor: '#ffffff',
@@ -191,14 +194,14 @@ export default function MapPage() {
                   }}
                 />
               }
-              label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#3c4043' }}>Show Path</Typography>}
+              label={<Typography variant="body2" sx={{ fontWeight: 600, color: '#3c4043', fontSize: isMobile ? '0.75rem' : '0.875rem' }}>Show Path</Typography>}
               sx={{ m: 0 }}
             />
           </Paper>
         </Box>
 
         {/* BOTTOM RIGHT: Recenter Button */}
-        <Box sx={{ position: 'absolute', bottom: 30, right: 20, zIndex: 1000 }}>
+        <Box sx={{ position: 'absolute', bottom: { xs: 16, sm: 30 }, right: { xs: 10, sm: 20 }, zIndex: 1000 }}>
           <Paper 
             elevation={0} 
             sx={{ 
@@ -211,12 +214,12 @@ export default function MapPage() {
             <IconButton 
               onClick={handleRecenter} 
               sx={{ 
-                p: 1.5, 
+                p: { xs: 1, sm: 1.5 }, 
                 color: '#1a73e8',
                 '&:hover': { bgcolor: '#f8f9fa' } 
               }}
             >
-              <MyLocationIcon />
+              <MyLocationIcon fontSize={isMobile ? "small" : "medium"} />
             </IconButton>
           </Paper>
         </Box>

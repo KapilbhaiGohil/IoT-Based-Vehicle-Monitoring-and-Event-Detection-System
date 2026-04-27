@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { 
   Box, Typography, Card, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Chip, Tabs, Tab, CircularProgress, Pagination 
+  TableContainer, TableHead, TableRow, Chip, Tabs, Tab, 
+  CircularProgress, Pagination, useTheme, useMediaQuery 
 } from '@mui/material';
 
 import { useWebSocket } from '../context/WebSocketContext';
@@ -22,8 +23,8 @@ const getEventStyle = (event) => {
 };
 
 const LogTable = ({ logs, isLoading }) => (
-  <TableContainer sx={{ flexGrow: 1, overflowY: 'auto' }}>
-    <Table stickyHeader size="medium">
+  <TableContainer sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'auto' }}>
+    <Table stickyHeader size="medium" sx={{ minWidth: { xs: 600, md: '100%' } }}>
       <TableHead>
         <TableRow>
           {['Timestamp', 'Event', 'Speed (km/h)', 'Coordinates (Lat, Lon)', 'Accel (X, Y, Z)'].map((headCell) => (
@@ -36,7 +37,8 @@ const LogTable = ({ logs, isLoading }) => (
                 borderBottom: '1px solid #dadce0',
                 textTransform: 'uppercase',
                 fontSize: '0.75rem',
-                letterSpacing: '0.5px'
+                letterSpacing: '0.5px',
+                whiteSpace: 'nowrap' // Prevents headers from wrapping on mobile
               }}
             >
               {headCell}
@@ -66,10 +68,10 @@ const LogTable = ({ logs, isLoading }) => (
                 hover
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell sx={{ color: '#3c4043', fontWeight: 500 }}>
+                <TableCell sx={{ color: '#3c4043', fontWeight: 500, whiteSpace: 'nowrap' }}>
                   {row.timestamp || new Date(row.time).toLocaleTimeString()}
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ whiteSpace: 'nowrap' }}>
                   <Chip 
                     label={row.event?.toUpperCase() || 'UNKNOWN'} 
                     size="small" 
@@ -84,13 +86,13 @@ const LogTable = ({ logs, isLoading }) => (
                     }}
                   />
                 </TableCell>
-                <TableCell sx={{ color: '#3c4043' }}>{row.speed ?? 'N/A'}</TableCell>
-                <TableCell sx={{ color: '#5f6368', fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                <TableCell sx={{ color: '#3c4043', whiteSpace: 'nowrap' }}>{row.speed ?? 'N/A'}</TableCell>
+                <TableCell sx={{ color: '#5f6368', fontFamily: 'monospace', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                   {row.lat !== undefined && row.lon !== undefined 
                     ? `${row.lat.toFixed(4)}, ${row.lon.toFixed(4)}` 
                     : 'N/A'}
                 </TableCell>
-                <TableCell sx={{ color: '#5f6368', fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                <TableCell sx={{ color: '#5f6368', fontFamily: 'monospace', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                   {row.x !== undefined 
                     ? `${row.x}, ${row.y}, ${row.z}` 
                     : 'N/A'}
@@ -106,6 +108,10 @@ const LogTable = ({ logs, isLoading }) => (
 
 export default function LogsPage() {
   const { sessionLogs: liveLogs } = useWebSocket();
+  const theme = useTheme();
+  
+  // Detect screen size
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   const [tabIndex, setTabIndex] = useState(0);
   const [storedLogs, setStoredLogs] = useState([]);
@@ -148,13 +154,14 @@ export default function LogsPage() {
   const tabStyle = (index) => ({
     textTransform: 'none', 
     fontWeight: 600, 
-    fontSize: '0.95rem',
+    fontSize: isMobile ? '0.85rem' : '0.95rem',
     color: tabIndex === index ? '#1a73e8' : '#5f6368',
+    minWidth: isMobile ? 'auto' : 120, // Allows tabs to shrink on mobile
     '&.Mui-selected': { color: '#1a73e8' }
   });
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 2, pb: 2, pt: { xs: 1, md: 0 } }}>
       <Typography variant="h5" sx={{ fontWeight: 500, color: '#202124', letterSpacing: '-0.5px' }}>
         System Logs
       </Typography>
@@ -175,7 +182,9 @@ export default function LogsPage() {
           <Tabs 
             value={tabIndex} 
             onChange={handleTabChange} 
-            variant="fullWidth"
+            variant={isMobile ? "scrollable" : "fullWidth"}
+            scrollButtons={isMobile ? "auto" : false}
+            allowScrollButtonsMobile
             sx={{
               '& .MuiTabs-indicator': {
                 backgroundColor: '#1a73e8',
@@ -185,9 +194,10 @@ export default function LogsPage() {
               }
             }}
           >
-            <Tab label="Live Log (Session)" sx={tabStyle(0)} />
-            <Tab label="Stored Log (All)" sx={tabStyle(1)} />
-            <Tab label="Event Log (Anomalies)" sx={tabStyle(2)} />
+            {/* Shorter names for mobile to fit better */}
+            <Tab label={isMobile ? "Live" : "Live Log (Session)"} sx={tabStyle(0)} />
+            <Tab label={isMobile ? "All Stored" : "Stored Log (All)"} sx={tabStyle(1)} />
+            <Tab label={isMobile ? "Anomalies" : "Event Log (Anomalies)"} sx={tabStyle(2)} />
           </Tabs>
         </Box>
 
@@ -201,7 +211,7 @@ export default function LogsPage() {
               sx={{ 
                 display: 'flex', 
                 justifyContent: 'center', 
-                p: 2, 
+                p: { xs: 1.5, sm: 2 }, 
                 borderTop: '1px solid #dadce0', 
                 bgcolor: '#ffffff', 
                 flexShrink: 0 
@@ -212,8 +222,10 @@ export default function LogsPage() {
                 page={page} 
                 onChange={handlePageChange} 
                 color="primary" 
-                showFirstButton 
-                showLastButton
+                showFirstButton={!isMobile} // Hide extreme buttons on mobile to save space
+                showLastButton={!isMobile}
+                size={isMobile ? "small" : "medium"} // Smaller buttons on mobile
+                siblingCount={isMobile ? 0 : 1} // Shows fewer page numbers on mobile
                 shape="rounded"
                 sx={{
                   '& .MuiPaginationItem-root': {
