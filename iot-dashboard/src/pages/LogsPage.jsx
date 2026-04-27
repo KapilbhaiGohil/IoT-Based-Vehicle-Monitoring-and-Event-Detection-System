@@ -120,7 +120,7 @@ export default function LogsPage() {
         setIsLoadingStored(true);
         try {
           const filterParam = tabIndex === 2 ? '&filter=anomalies' : '';
-          const response = await fetch(`http://localhost:8000/api/logs?page=${page}&limit=15${filterParam}`);
+          const response = await fetch(`https://iot-backend-gfgwbpc8fnb7d0am.centralindia-01.azurewebsites.net/api/logs?page=${page}&limit=15${filterParam}`);
           const data = await response.json();
           
           setStoredLogs(data.logs);

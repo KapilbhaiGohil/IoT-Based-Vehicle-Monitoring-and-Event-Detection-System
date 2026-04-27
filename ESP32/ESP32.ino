@@ -9,8 +9,8 @@
 #define SSID "demo"
 #define PASSWORD "12345678"
 
-String wsHost = "192.168.137.1";
-int wsPort = 8000;
+String wsHost = "iot-backend-gfgwbpc8fnb7d0am.centralindia-01.azurewebsites.net";
+int wsPort = 443;
 String wsUrl = "/ws";
 
 #define ADXL_ADDRESS 0x53
@@ -95,7 +95,7 @@ void setup() {
   for (int i = 0; i < SHORT_WINDOW; i++) shortBuffer[i] = 1.0;
   for (int i = 0; i < LONG_WINDOW; i++) longBuffer[i] = 1.0;
 
-  webSocket.begin(wsHost.c_str(), wsPort, wsUrl.c_str());
+  webSocket.beginSSL(wsHost.c_str(), wsPort, wsUrl.c_str());
   webSocket.onEvent(webSocketEvent);
   webSocket.setReconnectInterval(5000); 
   
@@ -130,7 +130,7 @@ void inputHandle(){
     if (configChanged) {
       Serial.println("Reconnecting WebSocket...");
       webSocket.disconnect(); 
-      webSocket.begin(wsHost.c_str(), wsPort, wsUrl.c_str());
+      webSocket.beginSSL(wsHost.c_str(), wsPort, wsUrl.c_str());
     }
   }
 }

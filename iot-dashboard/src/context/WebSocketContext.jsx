@@ -60,8 +60,8 @@ export const WebSocketProvider = ({ children }) => {
     const fetchInitialData = async () => {
       try {
         const [historyRes, analyticsRes] = await Promise.all([
-          fetch('http://localhost:8000/api/history'),
-          fetch('http://localhost:8000/api/analytics')
+          fetch('https://iot-backend-gfgwbpc8fnb7d0am.centralindia-01.azurewebsites.net/api/history'),
+          fetch('https://iot-backend-gfgwbpc8fnb7d0am.centralindia-01.azurewebsites.net/api/analytics')
         ]);
 
         const dbHistory = await historyRes.json();
@@ -86,7 +86,7 @@ export const WebSocketProvider = ({ children }) => {
 
     fetchInitialData();
 
-    const ws = new WebSocket('ws://localhost:8000/ws');
+    const ws = new WebSocket('wss://iot-backend-gfgwbpc8fnb7d0am.centralindia-01.azurewebsites.net/ws');
     wsRef.current = ws;
     ws.onopen = () => {
       console.log('Connected to WebSocket backend');
