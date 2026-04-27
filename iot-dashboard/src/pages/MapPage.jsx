@@ -164,7 +164,7 @@ export default function MapPage() {
               boxShadow: '0 2px 6px rgba(60,64,67,0.3)'
             }}
           >
-            <Typography variant="h5" sx={{ fontWeight: 700, color: '#202124', lineHeight: 1 }}>{currentSpeed}</Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700, color: '#202124', lineHeight: 1 }}>{parseInt(currentSpeed)}</Typography>
             <Typography variant="caption" sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#5f6368' }}>km/h</Typography>
           </Paper>
           
@@ -221,11 +221,13 @@ export default function MapPage() {
           </Paper>
         </Box>
 
-        <MapContainer ref={mapRef} center={[currentLat, currentLon]} zoom={15} style={{ height: '100%', width: '100%' }}>
+        <MapContainer ref={mapRef} center={[currentLat, currentLon]} zoom={15} style={{ height: '100%', width: '100%', backgroundColor: '#f8f9fa' }}>
+          
           <TileLayer 
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+
           {latestData && <Marker position={[latestData.lat, latestData.lon]} icon={customIcon} />}
           {showPath && localPath.length > 1 && (
             <Polyline positions={localPath} color="#1a73e8" weight={5} opacity={0.8} />

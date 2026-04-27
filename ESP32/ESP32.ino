@@ -78,6 +78,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
+  setCpuFrequencyMhz(80); 
   Serial.begin(9600);
 
   bool res = wm.autoConnect(SSID, PASSWORD);
@@ -136,7 +137,7 @@ void inputHandle(){
 void loop() {
   inputHandle();
   unsigned long currentMillis = millis();
-  webSocket.loop(); 
+  webSocket.loop();
 
   while (gpsSerial.available()) {
     gps.encode(gpsSerial.read());
@@ -227,17 +228,17 @@ void loop() {
     currentEvent = "tow";
   }
 
-  // EVENT DETECTION: Rash Driving Evaluation (Overrides Tow)
+  // EVENT DETECTION: Rash Driving Evaluation 
   if (rashTimer != 0 && currentMillis - rashTimer < RASH_SUSTAIN) {
     currentEvent = "rash_driving";
   }
 
-  // EVENT DETECTION: Collision Evaluation (Overrides Rash Driving)
+  // EVENT DETECTION: Collision Evaluation 
   if (collisionTimer != 0 && currentMillis - collisionTimer < COLLISION_SUSTAIN) {
     currentEvent = "collision";
   }
 
-  // EVENT DETECTION: Toppling Evaluation (Overrides Collision)
+  // EVENT DETECTION: Toppling Evaluation 
   if (z < THRESH_TOPPLE_Z) {
     if (!possibleTopple) {
       possibleTopple = true;
@@ -269,6 +270,6 @@ void loop() {
     Serial.println(jsonData);
 
     lastSend = currentMillis;
-    lastEventSent = currentEvent; 
+    lastEventSent = currentEvent;
   }
 }
