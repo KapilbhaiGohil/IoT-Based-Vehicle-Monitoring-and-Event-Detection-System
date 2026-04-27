@@ -138,6 +138,7 @@ export default function Layout() {
             </IconButton>
 
             {/* LEFT: Title (Hides on very small screens to save space) */}
+            {/* LEFT: Title (Visible on all screens, shorter on mobile) */}
             <Typography 
               variant="h6" 
               noWrap 
@@ -145,10 +146,12 @@ export default function Layout() {
               sx={{ 
                 fontWeight: 500, 
                 letterSpacing: '-0.5px',
-                display: { xs: 'none', sm: 'block' } 
+                display: 'block', // Removed the 'none' restriction
+                fontSize: { xs: '1.1rem', sm: '1.25rem' }, // Slightly smaller font on mobile
+                maxWidth: { xs: '120px', sm: 'none' }, // Prevents it from crushing the right-side icons
               }}
             >
-              ESP32 Vehicle Tracker
+              {isMobile ? 'Vehical Tracker' : 'ESP32 Vehicle Tracker'}
             </Typography>
           </Box>
 
